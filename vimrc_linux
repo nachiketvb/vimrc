@@ -25,35 +25,46 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
-
+"
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
-
-" Plugin 'scrooloose/syntastic'
-
+Plugin 'scrooloose/syntastic'
 Plugin 'Rip-Rip/clang_complete'
-
 Plugin 'rhysd/vim-clang-format'
+" Plugin 'altercation/vim-colors-solarized'
+" Plugin 'ervandew/supertab'
+"
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+" Plugin 'clang_complete'
+" plugin from http://vim-scripts.org/vim/scripts.html
+" Plugin 'sytastic'
+" Track the engine.
+Plugin 'SirVer/ultisnips'
 
-Plugin 'altercation/vim-colors-solarized'
+" Snippets are separated from the engine. Add this if you want them:
+Plugin 'honza/vim-snippets'
 
-" Plugin 'MarcWeber/vim-addon-mw-utils'
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
-" Plugin 'tomtom/tlib-vim'
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
-" Plugin 'SirVer/ultisnips'
-
-call vundle#end()
-
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
-" if has("vms")
-"   set nobackup		" do not keep a backup file, use versions instead
-" else
-"   set backup		" keep a backup file
-" endif
+if has("vms")
+  set nobackup		" do not keep a backup file, use versions instead
+else
+  set backup		" keep a backup file
+endif
 set history=50		" keep 50 lines of command line history
 set ruler		" show the cursor position all the time
 set showcmd		" display incomplete commands
@@ -122,20 +133,39 @@ if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
 		  \ | wincmd p | diffthis
 endif
-"Bundle 'Valloric/YouCompleteMe'
-"Bundle 'scrooloose/syntastic'
-set background=dark
-if has('gui_running')
-	colorscheme solarized
-	set guifont=Inconsolata\ 14
-endif
+
+function! LoadCscope()
+	let db = findfile("cscope.out", ".;")
+	if (!empty(db))
+		let path = strpart(db, 0, match(db, "/cscope.out$"))
+		set nocscopeverbose " suppress 'duplicate connection' error
+		exe "cs add " . db . " " . path
+		set cscopeverbose
+	endif
+endfunction
+au BufEnter /* call LoadCscope()
+
+"plugin: syntastic
+"let g:syntastic_check_on_open = 1
+let g:syntastic_enable_signs = 1
+let g:syntastic_c_compiler = 'clang++'
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_check_header = 1
+let g:syntastic_cpp_config_file = '.clang_complete'
+let g:syntastic_c_config_file = '.clang_complete'
+let g:syntastic_mode_map = {
+        \ "mode": "passive",
+        \ "active_filetypes": [],
+        \ "passive_filetypes": [] }
+" let g:syntastic_c_include_dirs = [ 'blks', 'cmds', 'cm4_sim' ]
 
 let g:clang_snippets = 1
 let g:clang_snippets_engine = 'clang_complete'
 let g:clang_auto_select = 1
 let g:clang_close_preview = 1
+let g:clang_library_path = '/mnt/raid_storage/home/bnachiket/packages/lib'
+let g:clang_user_options = '|| exit 0'
 set completeopt=menu,menuone
-let g:clang_library_path="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/"
 
 let g:clang_format#code_style = "llvm"
 let g:clang_format#style_options = {
@@ -144,13 +174,13 @@ let g:clang_format#style_options = {
             \ "BreakBeforeBraces" : "Stroustrup",
             \ "IndentCaseLabels" : "false",
             \ "Standard" : "C++11",
+	    \ "ColumnLimit" : "80",
             \ "AllowShortIfStatementsOnASingleLine" : "false"}
-
-let g:syntastic_c_compiler = 'clang'
-let g:syntastic_check_on_open = 1
 
 autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
+set background=dark
+set splitright
 inoremap <C-L> <C-O>:se nu!<CR>
 nnoremap <C-L> :se nu!<CR>
 inoremap <Leader>e <C-O>:w<CR><C-O>:SyntasticCheck<CR>
