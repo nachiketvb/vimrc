@@ -185,11 +185,13 @@ nnoremap <C-L> :se nu!<CR>
 inoremap <Leader>e <C-O>:w<CR><C-O>:SyntasticCheck<CR>
 nnoremap <Leader>e :w<CR>:SyntasticCheck<CR>
 nnoremap <CR> :nohlsearch <CR> <CR>
+inoremap <Leader>cs <C-O>:!cscope -Rb<CR><C-O>:cscope reset<CR>
+nnoremap <Leader>cs :!cscope -Rb<CR>:cscope reset<CR>
 
 
 " dir for swp files
 set dir^=~/.vim/swp//
 "colorscheme wombat256mod
 set fileencodings=iso-2022-jp,euc-jp,cp932,utf8,default,latin1
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-match OverLength /\%81v.\+/
+autocmd Filetype c,cpp,objc highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+autocmd Filetype c,cpp,objc match OverLength /\%81v.\+/
