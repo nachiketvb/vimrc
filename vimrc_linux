@@ -30,6 +30,13 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-fugitive'
 Plug 'justinmk/vim-sneak'
 Plug 'easymotion/vim-easymotion'
+Plug 'neovimhaskell/haskell-vim'
+Plug 'takac/vim-hardtime'
+Plug 'cdelledonne/vim-cmake'
+Plug 'ryanoasis/vim-devicons'
+Plug 'preservim/nerdtree'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
@@ -65,7 +72,6 @@ inoremap <C-U> <C-G>u<C-U>
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
   syntax on
-  set hlsearch
 endif
 
 " Only do this part when compiled with support for autocommands.
@@ -324,22 +330,15 @@ let g:coc_explorer_global_presets = {
 \   },
 \ }
 
-" Use preset argument to open it
-nmap <leader>ed :CocCommand explorer --preset .vim<CR>
-nmap <leader>ef :CocCommand explorer --preset floating<CR>
-nmap <leader>ec :CocCommand explorer --preset cocConfig<CR>
-nmap <leader>eb :CocCommand explorer --preset buffer<CR>
-
 " List all presets
 nmap <space>el :CocList explPresets<CR>
 
 set background=dark
 set splitright
-set nu rnu
-nnoremap <Leader><CR> :se nu! rnu!
-nnoremap <CR> :nohlsearch <CR> <CR>
+nnoremap <Leader><CR> :se nu! rnu!<CR>
 nnoremap <leader>> 25<C-w>>
 nnoremap <leader><lt> 25<C-w><lt>
+nnoremap <leader>h :set hlsearch!<CR>
 set signcolumn=yes
 highlight clear signcolumn
 set shiftwidth=2
@@ -351,3 +350,21 @@ set dir^=~/.vim/swp//
 "colorscheme wombat256mod
 "
 
+" hardtime plugin
+let g:hardtime_default_on = 1
+let g:hardtime_timeout = 5000
+let g:hardtime_showmsg = 1
+let g:hardtime_ignore_quickfix = 1
+
+" cmake plugin
+let g:cmake_link_compile_commands = 1
+nmap <leader>cg :CMakeGenerate<cr>
+nmap <leader>cb :CMakeBuild<cr>
+
+" Nerdtree
+" Start NERDTree. If a file is specified, move the cursor to its window.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * NERDTree | if argc() > 0 || exists("s:std_in") | wincmd p | endif
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+let g:NERDTreeWinSize=40
